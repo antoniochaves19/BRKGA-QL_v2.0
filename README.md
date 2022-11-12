@@ -18,7 +18,7 @@ An Adaptive and near Parameter-free BRKGA using Q-Learning, In: 2021 IEEE Congre
 
 BRKGA-QL version 2.0
 [2] Chaves et al. (2022)
-Hybrid Metaheuristic for an Integrated Dial-a-Ride Problem with Common Carrier and Public Transportation
+Hybrid Metaheuristic for an Integrated Dial-a-Ride Problem with Common Carrier and Public Transportation.
 Available here in technical report form.
 
 ## Scope
