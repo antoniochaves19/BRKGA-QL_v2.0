@@ -661,7 +661,7 @@ void SetQLParameters(float currentTime)
         epsilon = epsilon_max;
     }
     else {
-        epsilon = epsilon_min + 0.5 * (epsilon_max - epsilon_min) * (1 + cos((((int)currentTime%Ti)/(float)(Ti))*M_PI));
+        epsilon = epsilon_min + 0.5 * (epsilon_max - epsilon_min) * (1 + cos((((int)currentTime%Ti)/(float)(Ti))*3.14));
     }
     
     // *** define learning rate ***
