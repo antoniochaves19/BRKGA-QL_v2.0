@@ -5,111 +5,111 @@
 *************************************************************************************/
 int main()
 { 
-	// file with test instances and input data
+    // file with test instances and input data
 	FILE *arqProblems; 
-	arqProblems = fopen ("testScenario.csv", "r"); 
+    arqProblems = fopen ("testScenario.csv", "r"); 
 
-	if (arqProblems == NULL){
-		printf("\nERROR: File testScenario.csv not found\n");
-		getchar();
-		exit(1);
-	}
+    if (arqProblems == NULL){
+        printf("\nERROR: File testScenario.csv not found\n");
+        getchar();
+        exit(1);
+    }
 
-	char nameTable[100];
+    char nameTable[100];
 
-	//read first line of arqProblems file
-	fgets(nameTable, sizeof(nameTable), arqProblems); 
+    //read first line of arqProblems file
+    fgets(nameTable, sizeof(nameTable), arqProblems); 
 
-	// best solution that is saved in out file
-	TSol sBest;
+    // best solution that is saved in out file
+    TSol sBest;
 
 	// run the BRKGA-QL for all test instances
 	while (!feof(arqProblems))
 	{
 		// read the name of instances, debug mode, local search module, maximum time, maximum number of runs, maximum number of threads
 		fscanf(arqProblems,"%s %d %d %d %d %d %d %f", nameTable, &debug, &numDecoders, &numLS, &MAXTIME, &MAXRUNS, &MAX_THREADS, &OPTIMAL);
-		strcpy(instance,nameTable);
-
+        strcpy(instance,nameTable);
+        
 		//read data of the instance
-		ReadData(nameTable, n);
+        ReadData(nameTable, n);
 
-		double foBest = INFINITY,
-               	       foAverage = 0;
+        double foBest = INFINITY,
+               foAverage = 0;
 
-		float timeBest = 0,
-		      timeTotal = 0;
+        float timeBest = 0,
+              timeTotal = 0;
 
-		std::vector <double> ofvs;
-		ofvs.clear();
+        std::vector <double> ofvs;
+        ofvs.clear();
 
-		// best solutions found in MAXRUNS
-		sBest.ofv = INFINITY;
+        // best solutions found in MAXRUNS
+        sBest.ofv = INFINITY;
 
 		// run BRKGA-QL MaxRuns for each instance
-		printf("\n\nInstance: %s \nRun: ", instance);
-		for (int j=0; j<MAXRUNS; j++)
-		{
-		    // fixed seed
-		    if (debug == 1)
-			srand(j+1); 
-		    else
-			srand(time(NULL));
+        printf("\n\nInstance: %s \nRun: ", instance);
+        for (int j=0; j<MAXRUNS; j++)
+        {
+            // fixed seed
+            if (debug == 1)
+                srand(j+1); 
+            else
+                srand(time(NULL));
 
-		    printf("%d ", j+1);
+            printf("%d ", j+1);
+            
+            gettimeofday(&Tstart, NULL);
+            gettimeofday(&Tend, NULL);
+            gettimeofday(&Tbest, NULL);
 
-		    gettimeofday(&Tstart, NULL);
-		    gettimeofday(&Tend, NULL);
-		    gettimeofday(&Tbest, NULL);
+            // best solution found in this run
+            bestSolution.ofv = INFINITY;
 
-		    // best solution found in this run
-		    bestSolution.ofv = INFINITY;
+            // execute the evolutionary method
+            BRKGA_QL();
 
-		    // execute the evolutionary method
-		    BRKGA_QL();
+            gettimeofday(&Tend, NULL);
 
-		    gettimeofday(&Tend, NULL);
+            // store the best solution found in MAXRUNS
+            if (bestSolution.ofv < sBest.ofv)
+                sBest = bestSolution;
 
-		    // store the best solution found in MAXRUNS
-		    if (bestSolution.ofv < sBest.ofv)
-			sBest = bestSolution;
+            // calculate best and average results
+            if (bestSolution.ofv < foBest)
+                foBest = bestSolution.ofv;
 
-		    // calculate best and average results
-		    if (bestSolution.ofv < foBest)
-			foBest = bestSolution.ofv;
+            foAverage += bestSolution.ofv;
 
-		    foAverage += bestSolution.ofv;
+            // fitness of each solution found in the runs
+            ofvs.push_back(bestSolution.ofv);
 
-		    // fitness of each solution found in the runs
-		    ofvs.push_back(bestSolution.ofv);
+            timeBest += ((Tbest.tv_sec  - Tstart.tv_sec) * 1000000u + Tbest.tv_usec - Tstart.tv_usec) / 1.e6;
+            timeTotal += ((Tend.tv_sec  - Tstart.tv_sec) * 1000000u + Tend.tv_usec - Tstart.tv_usec) / 1.e6; 
+        }
 
-		    timeBest += ((Tbest.tv_sec  - Tstart.tv_sec) * 1000000u + Tbest.tv_usec - Tstart.tv_usec) / 1.e6;
-		    timeTotal += ((Tend.tv_sec  - Tstart.tv_sec) * 1000000u + Tend.tv_usec - Tstart.tv_usec) / 1.e6; 
-		}
+        // create a .csv file with average results
+        foAverage = foAverage / MAXRUNS;
+        timeBest = timeBest / MAXRUNS;
+        timeTotal = timeTotal / MAXRUNS;
 
-		// create a .csv file with average results
-		foAverage = foAverage / MAXRUNS;
-		timeBest = timeBest / MAXRUNS;
-		timeTotal = timeTotal / MAXRUNS;
+        if (!debug)
+        {
+        	WriteSolution(sBest, n, timeBest, timeTotal, instance);
+        	WriteResults(foBest, foAverage, ofvs, timeBest, timeTotal, instance);
+        }
+        else
+        {
+            WriteSolutionScreen(sBest, n, timeBest, timeTotal, instance);
+        }
 
-		if (!debug)
-		{
-			WriteSolution(sBest, n, timeBest, timeTotal, instance);
-			WriteResults(foBest, foAverage, ofvs, timeBest, timeTotal, instance);
-		}
-		else
-		{
-			WriteSolutionScreen(sBest, n, timeBest, timeTotal, instance);
-		}
+        // free memory with problem data
+        FreeMemoryProblem();
 
-		// free memory with problem data
-		FreeMemoryProblem();
+        // free memory of BRKGA-QL components
+        FreeMemory();
+    }
 
-		// free memory of BRKGA-QL components
-		FreeMemory();
-	}
-
-	fclose(arqProblems);
-	return 0;
+    fclose(arqProblems);
+    return 0;
 }
 
 
