@@ -59,4 +59,4 @@ The code structure is documented in [1] and organized in the following manner:
 - Number of threads used in OpenMP
 - Optimal or lower bound solution (if is known), 0 otherwise
 
-Users need to create a folder named "Instances/ProblemName", where the instances must be; Users also need to create a folder named "Results" where the results files are writed.
+Users need to create a folder named "Instances/ProblemName", where the instances must be.
