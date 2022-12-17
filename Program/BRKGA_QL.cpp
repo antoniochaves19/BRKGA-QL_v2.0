@@ -6,7 +6,7 @@
 int main()
 { 
     // file with test instances and input data
-	FILE *arqProblems;
+	FILE *arqProblems; 
     arqProblems = fopen ("testScenario.csv", "r"); 
 
     if (arqProblems == NULL){
@@ -661,7 +661,7 @@ void SetQLParameters(float currentTime)
         epsilon = epsilon_max;
     }
     else {
-        epsilon = epsilon_min + 0.5 * (epsilon_max - epsilon_min) * (1 + cos((((int)currentTime%Ti)/(float)(Ti))*3.14));
+        epsilon = epsilon_min + 0.5 * (epsilon_max - epsilon_min) * (1 + cos((((int)currentTime%Ti)/(float)(Ti))*M_PI));
     }
     
     // *** define learning rate ***
