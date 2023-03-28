@@ -27,7 +27,7 @@ $(TARGETDIR)/Problem.o: Problem.h Problem.cpp
 
 $(TARGETDIR)/BRKGA_QL.o: BRKGA_QL.h BRKGA_QL.cpp
 	$(CCC) $(CCFLAGS) -c BRKGA_QL.cpp -o $(TARGETDIR)/BRKGA_QL.o
-    
+
 test: runTest
 	./runTest
 

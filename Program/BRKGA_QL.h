@@ -38,18 +38,6 @@
 void BRKGA_QL();
 
 /************************************************************************************
- Method: Decoder()
- Description: Convert a random key solution in a real problem solution
-*************************************************************************************/
-void Decoder(TSol &s);
-
-/************************************************************************************
- Method: LocalSearch
- Description: RVND
-*************************************************************************************/
-void LocalSearch(TSol &s);
-
-/************************************************************************************
  Method: updateBestSolution()
  Description: Update the best solution found during the run
 *************************************************************************************/
@@ -132,26 +120,6 @@ Method: FREE MEMORY
 Description: free memory of global vector
 *************************************************************************************/
 void FreeMemory();
-
-//********************************** IO Functions ***********************************
-
-/************************************************************************************
-Method: WRITE RESULTS
-Description: write the results in .XLS file
-*************************************************************************************/
-void WriteResults(double fo, double foMedia, std::vector <double> fos, float tempoMelhor, float tempoTotal);
-
-/************************************************************************************
-Method: WRITE SOLUTION
-Description: write the solution in .TXT file
-*************************************************************************************/
-void WriteSolution(TSol s, float timeBest, float timeTotal);
-
-/************************************************************************************
-Method: WRITE SOLUTION SCREEN
-Funcao: write the solution in the screen
-*************************************************************************************/
-void WriteSolutionScreen(TSol s, float timeBest, float timeTotal);
 
 /************************************************************************************
  Method: RANDOMICO

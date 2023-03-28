@@ -59,6 +59,108 @@ void ReadData(char nameTable[], int &n)
     n = nAux;
 }
 
+void Decoder(TSol &s, int n, int nDec)
+{
+    // copy the random-key sequence of current solution 
+    TSol temp = s;
+
+    // define decoder function based in the random-key of position n+1
+    int dec = floor(s.vec[n].rk*nDec)+1;
+    switch (dec)
+    {
+        case 1: 
+            Dec1(s, n);
+            break;
+
+        case 2: 
+            Dec2(s, n);
+            break;
+        
+        case 3: 
+            Dec3(s, n);
+            break;
+
+        case 4: 
+            Dec4(s, n);
+            break;
+
+        case 5: 
+            Dec5(s, n);
+            break;
+
+        default:
+            break;
+    }
+
+    // return initial random-key sequence and maintain the solution sequence
+    for (int i=0; i<n; i++){
+        s.vec[i].rk = temp.vec[i].rk;
+    }
+}
+
+void LocalSearch(TSol &s, int n, int nLS)
+{
+    // ***** we use a Random Variable Neighborhood Descent (RVND) as local search ****
+
+    // current neighborhood
+	int k = 1;
+
+    // predefined number of neighborhood moves
+    std::vector <int> NSL;
+    std::vector <int> NSLAux;
+    
+    for (int i=1; i<=nLS; i++)
+    {
+        NSL.push_back(i);
+        NSLAux.push_back(i);
+    }
+
+	while (!NSL.empty())
+	{
+        // current objective function
+        double foCurrent = s.ofv;
+
+        // randomly choose a neighborhood
+        int pos = rand() % NSL.size();
+        k = NSL[pos];
+
+        switch (k)
+        {
+            case 1: 
+                LS1(s, n); 
+                break;
+
+            case 2:
+                LS2(s, n); 
+                break;
+
+            case 3:
+                LS3(s, n); 
+                break;
+
+            case 4:
+                LS4(s, n); 
+                break;
+
+            default:
+                break;
+        }
+
+        // we better the current solution
+        if (s.ofv < foCurrent)
+        {
+            // refresh NSL
+            NSL.clear();
+            NSL = NSLAux;
+        }
+        else
+        {
+            // Remove N(n) from NSL
+            NSL.erase(NSL.begin()+pos);
+        }
+	} //end while
+}
+
 double CalculateFitness(TSol s, int n)
 {
     // calculate objective function

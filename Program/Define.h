@@ -9,12 +9,13 @@ std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
 
 // Input File
 int debug = 1;                              // 0 - run mode      		    1 - debug mode
-int numDecoders = 1;                        // number of decoders
-int numLS = 1;                              // 0 - without local search     > 0 - number of local search heuristics
 int MAXTIME = 1;                            // maximum runtime
 int MAXRUNS =  1;                           // maximum number of runs of the method
 unsigned MAX_THREADS = 1;            		// number of threads
 float OPTIMAL = 0;                          // optimal solution (if it is known)
+int numDecoders;                            // number of decoders
+int numLS;                                  // 0 - without local search     > k - number of local search heuristics
+
 
 // Run
 char instance[100];                         // name of instance
@@ -31,6 +32,8 @@ double pm;          	                    // fraction of population to be replace
 double rhoe;             	                // probability that offspring inherit an allele from elite parent
 
 double sigma;                               // pearson correlation factor
+
+const double PI = 3.14159265;               // pi
 
 std::vector <TSol> Pop;                     // current population
 std::vector <TSol> PopInter;               	// intermediary population

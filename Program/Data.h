@@ -16,7 +16,6 @@ struct TVecSol
 	double rk;                              // random-key of chromosome
 };
 
-
 /***********************************************************************************
  Struct: TSol
  Description: struct to represent a solution problem
@@ -31,7 +30,6 @@ struct TSol
     int promising;                          // indicates if a solution is promising to apply local search
 };
 
-
 /***********************************************************************************
  Struct: TQ
  Description: struct to represent a quality matrix
@@ -44,6 +42,5 @@ struct TQ
     int k;
     int kImp;
 };
-
 
 #endif

@@ -1,8 +1,8 @@
 #include "BRKGA_QL.h"
 
-/************************************************************************************
-								MAIN FUNCTION AREA
-*************************************************************************************/
+// /************************************************************************************
+// 								MAIN FUNCTION AREA
+// *************************************************************************************/
 int main()
 { 
     // file with test instances and input data
@@ -112,7 +112,6 @@ int main()
     return 0;
 }
 
-
 /************************************************************************************
 			                  GENERAL FUNCTIONS
 *************************************************************************************/
@@ -145,7 +144,7 @@ void BRKGA_QL()
     for (int i=0; i<p; i++)
     {
         TSol ind = CreateInitialSolutions(); 
-        Decoder(ind);
+        Decoder(ind,n,numDecoders);
         Pop[i] = PopInter[i] = ind;
     }
     
@@ -192,6 +191,13 @@ void BRKGA_QL()
         //rhoe    = 0.70;                                                         //** 
         // ***************************************************************************
 
+        // if (debug){
+        //     FILE *arquivo;
+        //     arquivo = fopen("../Results/Parametros.csv","a");
+        //     fprintf(arquivo, "\n%d \t %d \t %.3lf \t %.3lf \t %.3lf",numGenerations, p, pe, pm, rhoe);
+        //     fclose(arquivo);
+        // }
+
 
         // The 'Pe' best chromosomes are maintained, so we just copy these into PopInter:
         #pragma omp parallel for num_threads(MAX_THREADS)
@@ -207,7 +213,7 @@ void BRKGA_QL()
             PopInter[i] = ParametricUniformCrossover((int)(p*pe), p);
  
             // Calculate the fitness of new chromosomes
-            Decoder(PopInter[i]); 
+            Decoder(PopInter[i],n,numDecoders); 
         }
                 
         // Update the current population
@@ -235,12 +241,12 @@ void BRKGA_QL()
         }
 
         // Print reward of each generation
-        if (debug) {
-            FILE *arquivo;
-            arquivo = fopen("../Results/Reward.txt","a");
-            fprintf(arquivo, "\n%d \t %.3lf",numGenerations, R);
-            fclose(arquivo);
-        }
+        // if (debug) {
+        //     FILE *arquivo;
+        //     arquivo = fopen("../Results/Reward.txt","a");
+        //     fprintf(arquivo, "\n%d \t %.3lf",numGenerations, R);
+        //     fclose(arquivo);
+        // }
         
         // Update the Q-Table values
         if (R > 0){
@@ -276,7 +282,7 @@ void BRKGA_QL()
                     // generate caotic individual (crossover between one elite and one mutant)
                     else if (i > 0){
                         ChaoticInd(Pop[i]);
-                        Decoder(Pop[i]);
+                        Decoder(Pop[i],n,numDecoders);
 
                         // set flag as 0 to permit new local search
                         Pop[i].flag = 0;
@@ -288,7 +294,7 @@ void BRKGA_QL()
 
                     // local search not influence the evolutionary process
                     TSol s = Pop[promisingSol[i]];
-                    LocalSearch(s);
+                    LocalSearch(s,n,numLS);
                     updateBestSolution(s);                    
 
                     // set flag as 1 to prevent new local search in the same solution
@@ -345,13 +351,13 @@ void BRKGA_QL()
                         Pop[e].vec[i+1].rk = temp;
                     }
                 }
-                Decoder(Pop[e]);
+                Decoder(Pop[e],n,numDecoders);
             }
 
             // reset the non-elite chromosomes
             for (int i=(int)(p*pe); i<p; i++){
                 Pop[i] = CreateInitialSolutions();
-                Decoder(Pop[i]);
+                Decoder(Pop[i],n,numDecoders);
             }
 
             sort(Pop.begin(), Pop.end(), sortByFitness);
@@ -375,108 +381,6 @@ void BRKGA_QL()
             break;
         }
     }
-}
-
-void Decoder(TSol &s)
-{
-    // copy the random-key sequence of current solution 
-    TSol temp = s;
-
-    // define decoder function based in the random-key of position n+1
-    int dec = floor(s.vec[n].rk*numDecoders)+1;
-    switch (dec)
-    {
-        case 1: 
-            Dec1(s, n);
-            break;
-
-        case 2: 
-            Dec2(s, n);
-            break;
-        
-        case 3: 
-            Dec3(s, n);
-            break;
-
-        case 4: 
-            Dec4(s, n);
-            break;
-
-        case 5: 
-            Dec5(s, n);
-            break;
-
-        default:
-            break;
-    }
-
-    // return initial random-key sequence and maintain the solution sequence
-    for (int i=0; i<n; i++){
-        s.vec[i].rk = temp.vec[i].rk;
-    }
-}
-
-void LocalSearch(TSol &s)
-{
-    // ***** we use a Random Variable Neighborhood Descent (RVND) as local search ****
-
-    // current neighborhood
-	int k = 1;
-
-    // predefined number of neighborhood moves
-    std::vector <int> NSL;
-    std::vector <int> NSLAux;
-    
-    for (int i=1; i<=numLS; i++)
-    {
-        NSL.push_back(i);
-        NSLAux.push_back(i);
-    }
-
-	while (!NSL.empty())
-	{
-        // current objective function
-        double foCurrent = s.ofv;
-
-        // randomly choose a neighborhood
-        int pos = rand() % NSL.size();
-        k = NSL[pos];
-
-        switch (k)
-        {
-            case 1: 
-                LS1(s, n); 
-                break;
-
-            case 2:
-                LS2(s, n); 
-                break;
-
-            case 3:
-                LS3(s, n); 
-                break;
-
-            case 4:
-                LS4(s, n); 
-                break;
-
-            default:
-                break;
-        }
-
-        // we better the current solution
-        if (s.ofv < foCurrent)
-        {
-            // refresh NSL
-            NSL.clear();
-            NSL = NSLAux;
-        }
-        else
-        {
-            // Remove N(n) from NSL
-            NSL.erase(NSL.begin()+pos);
-        }
-	} //end while
 }
 
 void updateBestSolution(TSol s)
@@ -661,7 +565,7 @@ void SetQLParameters(float currentTime)
         epsilon = epsilon_max;
     }
     else {
-        epsilon = epsilon_min + 0.5 * (epsilon_max - epsilon_min) * (1 + cos((((int)currentTime%Ti)/(float)(Ti))*M_PI));
+        epsilon = epsilon_min + 0.5 * (epsilon_max - epsilon_min) * (1 + cos((((int)currentTime%Ti)/(float)(Ti))*PI));
     }
     
     // *** define learning rate ***
@@ -761,7 +665,7 @@ void UpdatePopulationSize()
         for (int k = oldPsize; k < p; k++)
         {
         	Pop[k] = ParametricUniformCrossover((int)(oldPsize*pe), oldPsize-1);
-            Decoder(Pop[k]);
+            Decoder(Pop[k],n,numDecoders);
         }
 
         // sort new population

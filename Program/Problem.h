@@ -1,4 +1,3 @@
-//#pragma once
 #ifndef _PROBLEM_H
 #define _PROBLEM_H
 
@@ -27,6 +26,7 @@ static std::vector <std::vector <double> > dist;	// matrix with Euclidean distan
 static std::vector <TNode> node;					// vector of TSP nodes
 
 
+
 //-------------------------- FUNCTIONS OF SPECIFIC PROBLEM --------------------------
 
 
@@ -35,6 +35,19 @@ static std::vector <TNode> node;					// vector of TSP nodes
  Description: read input data of the problem
 *************************************************************************************/
 void ReadData(char nameTable[], int &n);
+
+/************************************************************************************
+ Method: Decoder()
+ Description: Convert a random key solution in a real problem solution
+*************************************************************************************/
+void Decoder(TSol &s, int n, int nDec);
+
+/************************************************************************************
+ Method: LocalSearch
+ Description: RVND
+*************************************************************************************/
+void LocalSearch(TSol &s, int n, int nLS);
+
 
 /************************************************************************************
  Method: CalculateFitness
