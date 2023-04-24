@@ -22,12 +22,12 @@ void ReadData(char nameTable[], int &n)
 
     // read instance head
     char temp[100];
-    fgets(temp, sizeof(temp), arq);
-    fgets(temp, sizeof(temp), arq);
-    fgets(temp, sizeof(temp), arq);
-    fgets(temp, sizeof(temp), arq);
-    fgets(temp, sizeof(temp), arq);
-    fgets(temp, sizeof(temp), arq);
+    if (fgets(temp, sizeof(temp), arq) == NULL) exit(1);;
+    if (fgets(temp, sizeof(temp), arq) == NULL) exit(1);;
+    if (fgets(temp, sizeof(temp), arq) == NULL) exit(1);;
+    if (fgets(temp, sizeof(temp), arq) == NULL) exit(1);;
+    if (fgets(temp, sizeof(temp), arq) == NULL) exit(1);;
+    if (fgets(temp, sizeof(temp), arq) == NULL) exit(1);;
 
     // read node informations
     int nAux = 0;
@@ -36,7 +36,7 @@ void ReadData(char nameTable[], int &n)
 
     while (!feof(arq))
     {
-    	fscanf(arq, "%d %lf %lf", &nodeTemp.id, &nodeTemp.x, &nodeTemp.y);
+    	if (fscanf(arq, "%d %lf %lf", &nodeTemp.id, &nodeTemp.x, &nodeTemp.y) == 0) exit(1);
     	node.push_back(nodeTemp);
 
     	nAux++;

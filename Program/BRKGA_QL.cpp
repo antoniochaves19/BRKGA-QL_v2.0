@@ -3,7 +3,7 @@
 // /************************************************************************************
 // 								MAIN FUNCTION AREA
 // *************************************************************************************/
-int main()
+int main() 
 { 
     // file with test instances and input data
 	FILE *arqProblems; 
@@ -18,16 +18,30 @@ int main()
     char nameTable[100];
 
     //read first line of arqProblems file
-    fgets(nameTable, sizeof(nameTable), arqProblems); 
-
+    if (fgets(nameTable, sizeof(nameTable), arqProblems) == NULL) {
+        printf("\nERROR: File %s not found\n", nameTable);
+        getchar();
+        exit(1);
+    }
+    
     // best solution that is saved in out file
     TSol sBest;
+    sBest.ofv = INFINITY;
+    sBest.flag = 0;
+    sBest.label = 0;
+    sBest.promising =0;
+    sBest.similar = 0;
 
 	// run the BRKGA-QL for all test instances
 	while (!feof(arqProblems))
 	{
 		// read the name of instances, debug mode, local search module, maximum time, maximum number of runs, maximum number of threads
-		fscanf(arqProblems,"%s %d %d %d %d %d %d %f", nameTable, &debug, &numDecoders, &numLS, &MAXTIME, &MAXRUNS, &MAX_THREADS, &OPTIMAL);
+        if (fscanf(arqProblems,"%s %d %d %d %d %d %d %f", nameTable, &debug, &numDecoders, &numLS, &MAXTIME, &MAXRUNS, &MAX_THREADS, &OPTIMAL) == 0) {
+            printf("\nERROR: File %s not found\n", nameTable);
+            getchar();
+            exit(1);
+        }
+		
         strcpy(instance,nameTable);
         
 		//read data of the instance
@@ -717,7 +731,7 @@ TSol ParametricUniformCrossover(int eliteSize, int popSize)
 	TSol s;
 
     int eliteParent = irandomico(0, eliteSize - 1);                 // one chromosome from elite set
-    int nonEliteParent = irandomico(0, popSize-1);                  // one chromosome from entire population
+    int nonEliteParent = irandomico(eliteSize, popSize-1);          // one chromosome from non-elite set
 
     // best fit parent is parent elite
     if (Pop[eliteParent].ofv > Pop[nonEliteParent].ofv){

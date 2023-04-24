@@ -1,2 +1,2 @@
 Instance	    Debug	#Decoder	#LS	Time	#Runs	#Threads	Optimal
-/TSP/bier127.tsp	1	      5	     4	127	      1	      4	        118282
+/TSP/pr136.tsp	1	5	4	136	1	4	96772

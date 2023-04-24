@@ -32,8 +32,8 @@
 //****************************** General Functions **********************************
 
 /************************************************************************************
- Method: BRKGA()
- Description: Apply the method BRKGA to solve the problem
+ Method: BRKGA_QL()
+ Description: Apply the method BRKGA_QL to solve the problem
 *************************************************************************************/
 void BRKGA_QL();
 
